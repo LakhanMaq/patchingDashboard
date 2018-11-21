@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Patching Dashboard</title>
+
+    <!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:AudienceTag msdt:dt="string">11;#Private|f5090252-6337-4bd7-bd10-e9e6238424f4</mso:AudienceTag>
+<mso:AudienceTagTaxHTField0 msdt:dt="string">Private|f5090252-6337-4bd7-bd10-e9e6238424f4</mso:AudienceTagTaxHTField0>
+<mso:TaxCatchAll msdt:dt="string">11;#Private|f5090252-6337-4bd7-bd10-e9e6238424f4</mso:TaxCatchAll>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<script>
+    var arrMonths = [];
+
+    $(document).ready(function () {
+        var resultData;
+        var date
+        var selectedMonth = "";
+
+        $.ajax({
+
+            url: "https://teams.starbucks.com/sites/maq/_api/web/lists/GetByTitle('Patching Status List')/items",
+            type: "GET",
+            headers: {
+                "accept": "application/json;odata=verbose",
+            },
+            success: function (data) {
+                console.log(data);
+                resultData = data;
+            
+                $("select.selectM").change(function () {
+                    $(".tile").removeClass('error');
+                    $(".tile").removeClass('pending');
+                    $(".tile").removeClass('complete');
+                    $(".tile").addClass('pending');
+                    $(".date").text('TBD');
+                    selectedMonth = $(this).children("option:selected").val();
+                    $("#w3s").attr("href", "https://www.w3schools.com/jquery/");
+                    for (var i = 0; i < resultData.d.results.length; i++) {
+                     
+                        if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Date) {
+                           
+                            
+                            if (resultData.d.results[i].Patching_x0020_Month === selectedMonth) {
+                                if(resultData.d.results[i].Environment == 'PH-Local-DEV')
+                                    {
+                                        $("#kblinks").attr("href",resultData.d.results[i].KBLinks );
+                                    }
+                                date = new Date(resultData.d.results[i].Date);
+
+                                $("#" + resultData.d.results[i].Environment).text(date.format('MM/dd'));
+                                if (-1 === arrMonths.indexOf(date.format("MMM yyyy"))) {
+
+                                    if (-1 === arrMonths.indexOf(resultData.d.results[i].Patching_x0020_Month)) {
+                                        arrMonths.push(resultData.d.results[i].Patching_x0020_Month);
+                                    }
+                                }
+                                    $("#" + resultData.d.results[i].Environment).parent().removeClass('complete');
+                                    $("#" + resultData.d.results[i].Environment).parent().removeClass('error');
+                                    $("#" + resultData.d.results[i].Environment).parent().removeClass('pending');
+                                if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Completed") {
+                                    $("#" + resultData.d.results[i].Environment).parent().addClass('complete');
+                                }
+                                else if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Pending") {
+                                        $("#" + resultData.d.results[i].Environment).parent().addClass('pending');
+                                }
+                                else if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Error") {
+                                           $("#" + resultData.d.results[i].Environment).parent().addClass('error');
+                                }
+                            }
+                        }
+
+
+
+                    }
+                });
+                // TODO: Render months list in the dropdown
+                console.log(arrMonths);
+                var arr = arrMonths;
+                var select = document.getElementsByClassName("selectM"), arr;
+                for (var i = 0; i < arr.length; i++) {
+                    var option = document.createElement("OPTION"),
+                        txt = document.createTextNode(arr[i]);
+                    option.appendChild(txt);
+                    option.setAttribute("value", arr[i]);
+                    select.insertBefore(option, select.lastChild);
+
+                }
+
+
+
+
+
+            },
+            error: function (error) {
+                alert(JSON.stringify(error));
+            }
+
+
+        });
+
+    });
+    $(document).ready(function () {
+
+    });
+
+</script>
+
+<style>
+    .report {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /*margin: auto;*/
+        /*width: 1500px;*/
+        color: #808080;
+    }
+
+    .tile {
+        height: 78px;
+        width: 150px;
+        border-radius: 15px;
+        display: inline-block;
+        text-align: center;
+        color: #fff;
+        background-color: gray;
+        font-size: 18px;
+        /*padding-top: 25px;*/
+    }
+
+    .tile .environment {
+        /*border: 1px solid red;*/
+        height: 35px;
+        width: 100px;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .tile .date {
+        height: 35px;
+        width: 100px;
+        display: inline-block;
+    }
+
+    .complete {
+        background-color: #3bc172;
+    }
+
+    .pending {
+        background-color: gray;
+    }
+
+    .error {
+        background-color: #ff0033;
+    }
+
+    .arrow {
+        width: 40px;
+        height: 40px;
+        display: inline-block;
+        margin-bottom: 30px;
+    }
+
+    #title {
+        display: inline-block;
+        font: 30px Segoe UI;
+    }
+
+    .selectM {
+        float: right;
+        font: 20px Segoe UI;
+        width: 180px;
+        height: 40px;
+
+    }
+    #kblinks {
+        height: 35px;
+        width: 100%;
+        display: inline-block;
+    }
+</style>
+
+<body class="report">
+    <div style="width: 1200px;">
+        <div id="title">Windows Patching</div>
+        <select class="selectM">
+            <option selected="selected" value="">Select Month</option>
+            <option value="October">October-2018</option>
+            <option value="November">November-2018</option>
+        </select>
+
+    </div>
+
+    <div class="section">
+        <h2>Partner Hub</h2>
+        <div class="tile">
+            <span class="environment">Local DEV</span>
+            <span class="date" id="PH-Local-DEV">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">DEV</span>
+            <span class="date" id="PH-DEV">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">TEST</span>
+            <span class="date" id="PH-TEST">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">CERT</span>
+            <span class="date" id="PH-CERT">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">PROD</span>
+            <span class="date" id="PH-PROD">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">PROD DR</span>
+            <span class="date" id="PH-PROD-DR">TBD</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Secure Hub</h2>
+        <div class="tile">
+            <span class="environment">CERT</span>
+            <span class="date" id="SH-CERT">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">PROD</span>
+            <span class="date" id="SH-PROD">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">PROD DR</span>
+            <span class="date" id="SH-PROD-DR">TBD</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>StoreLink</h2>
+        <div class="tile">
+            <span class="environment">Local DEV</span>
+            <span class="date" id="SL-Local-DEV">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">DEV</span>
+            <span class="date" id="SL-DEV">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">TEST</span>
+            <span class="date" id="SL-TEST">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">CERT</span>
+            <span class="date" id="SL-CERT">TBD</span>
+        </div>
+        <img src="../SiteAssets/arrow-right.png" class="arrow" />
+        <div class="tile">
+            <span class="environment">PROD</span>
+            <span class="date" id="SL-PROD">TBD</span>
+        </div>
+    </div>
+    <div>
+            <p>
+		<a href="https://www.ghacks.net/2018/11/13/microsoft-windows-security-updates-november-2018-release-overview/" id="kblinks">
+			For KB related details click here.
+		</a>
+	</p>
+    </div>
+
+</body>
+
+</html>
