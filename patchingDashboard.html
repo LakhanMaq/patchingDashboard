@@ -109,12 +109,12 @@
         var select = document.getElementById("selectMon");
         $(window).load(function () {
             // $("#" + arrMonths[0]).trigger('click');
-            alert("in load fn");
+         //   alert("in load fn");
             if (select.selectedIndex == 0) {
 
                 // document.getElementById("demo" + i).innerHTML = nodes[i].text;
                 select.selectedIndex = 1;
-                alert("executed");
+               // alert("executed");
                 selectedMonth = document.getElementById("selectMon").childNodes[3].value;
                 $("select.selectM").trigger('change');
             }
