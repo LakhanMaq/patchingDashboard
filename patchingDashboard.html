@@ -22,6 +22,7 @@
         var resultData;
         var date
         var selectedMonth = "";
+        //var nodes = document.getElementsByClassName("selectM").childNodes
 
         $.ajax({
 
@@ -33,7 +34,7 @@
             success: function (data) {
                 console.log(data);
                 resultData = data;
-            
+
                 $("select.selectM").change(function () {
                     $(".tile").removeClass('error');
                     $(".tile").removeClass('pending');
@@ -43,15 +44,14 @@
                     selectedMonth = $(this).children("option:selected").val();
                     $("#w3s").attr("href", "https://www.w3schools.com/jquery/");
                     for (var i = 0; i < resultData.d.results.length; i++) {
-                     
+
                         if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Date) {
-                           
-                            
+
+
                             if (resultData.d.results[i].Patching_x0020_Month === selectedMonth) {
-                                if(resultData.d.results[i].Environment == 'PH-Local-DEV')
-                                    {
-                                        $("#kblinks").attr("href",resultData.d.results[i].KBLinks );
-                                    }
+                                if (resultData.d.results[i].Environment == 'PH-Local-DEV') {
+                                    $("#kblinks").attr("href", resultData.d.results[i].KBLinks);
+                                }
                                 date = new Date(resultData.d.results[i].Date);
 
                                 $("#" + resultData.d.results[i].Environment).text(date.format('MM/dd'));
@@ -61,17 +61,17 @@
                                         arrMonths.push(resultData.d.results[i].Patching_x0020_Month);
                                     }
                                 }
-                                    $("#" + resultData.d.results[i].Environment).parent().removeClass('complete');
-                                    $("#" + resultData.d.results[i].Environment).parent().removeClass('error');
-                                    $("#" + resultData.d.results[i].Environment).parent().removeClass('pending');
+                                $("#" + resultData.d.results[i].Environment).parent().removeClass('complete');
+                                $("#" + resultData.d.results[i].Environment).parent().removeClass('error');
+                                $("#" + resultData.d.results[i].Environment).parent().removeClass('pending');
                                 if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Completed") {
                                     $("#" + resultData.d.results[i].Environment).parent().addClass('complete');
                                 }
                                 else if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Pending") {
-                                        $("#" + resultData.d.results[i].Environment).parent().addClass('pending');
+                                    $("#" + resultData.d.results[i].Environment).parent().addClass('pending');
                                 }
                                 else if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Error") {
-                                           $("#" + resultData.d.results[i].Environment).parent().addClass('error');
+                                    $("#" + resultData.d.results[i].Environment).parent().addClass('error');
                                 }
                             }
                         }
@@ -89,7 +89,8 @@
                     var option = document.createElement("OPTION"),
                         txt = document.createTextNode(arr[i]);
                     option.appendChild(txt);
-                    option.setAttribute("value", arr[i]);
+                    option.setAttribute(value, arr[i]);
+                    // option.setAttribute();
                     select.insertBefore(option, select.lastChild);
 
                 }
@@ -105,11 +106,76 @@
 
 
         });
+        var select = document.getElementById("selectMon");
+        $(window).load(function () {
+            // $("#" + arrMonths[0]).trigger('click');
+            alert("in load fn");
+            if (select.selectedIndex == 0) {
+
+                // document.getElementById("demo" + i).innerHTML = nodes[i].text;
+                select.selectedIndex = 1;
+                alert("executed");
+                selectedMonth = document.getElementById("selectMon").childNodes[3].value;
+                $("select.selectM").trigger('change');
+            }
+            else { 
+               // alert("else")
+                selectedMonth = $(this).children("option:selected").val();
+                $("select.selectM").trigger('change');
+            }
+            $("select.selectM").change(function () {
+                $(".tile").removeClass('error');
+                $(".tile").removeClass('pending');
+                $(".tile").removeClass('complete');
+                $(".tile").addClass('pending');
+                $(".date").text('TBD');
+
+                $("#w3s").attr("href", "https://www.w3schools.com/jquery/");
+                for (var i = 0; i < resultData.d.results.length; i++) {
+
+                    if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Date) {
+
+
+                        if (resultData.d.results[i].Patching_x0020_Month === selectedMonth) {
+                            if (resultData.d.results[i].Environment == 'PH-Local-DEV') {
+                                $("#kblinks").attr("href", resultData.d.results[i].KBLinks);
+                            }
+                            date = new Date(resultData.d.results[i].Date);
+
+                            $("#" + resultData.d.results[i].Environment).text(date.format('MM/dd'));
+                            if (-1 === arrMonths.indexOf(date.format("MMM yyyy"))) {
+
+                                if (-1 === arrMonths.indexOf(resultData.d.results[i].Patching_x0020_Month)) {
+                                    arrMonths.push(resultData.d.results[i].Patching_x0020_Month);
+                                }
+                            }
+                            $("#" + resultData.d.results[i].Environment).parent().removeClass('complete');
+                            $("#" + resultData.d.results[i].Environment).parent().removeClass('error');
+                            $("#" + resultData.d.results[i].Environment).parent().removeClass('pending');
+                            if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Completed") {
+                                $("#" + resultData.d.results[i].Environment).parent().addClass('complete');
+                            }
+                            else if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Pending") {
+                                $("#" + resultData.d.results[i].Environment).parent().addClass('pending');
+                            }
+                            else if ("undefined" != typeof (resultData.d.results[i]) && resultData.d.results[i].Comments == "Error") {
+                                $("#" + resultData.d.results[i].Environment).parent().addClass('error');
+                            }
+                        }
+                    }
+
+
+
+                }
+            });
+
+
+
+
+        });
 
     });
-    $(document).ready(function () {
 
-    });
 
 </script>
 
@@ -178,6 +244,7 @@
         height: 40px;
 
     }
+
     #kblinks {
         height: 35px;
         width: 100%;
@@ -188,8 +255,8 @@
 <body class="report">
     <div style="width: 1200px;">
         <div id="title">Windows Patching</div>
-        <select class="selectM">
-            <option selected="selected" value="">Select Month</option>
+        <select class="selectM" id="selectMon">
+            <option value="">Select Month</option>
             <option value="October">October-2018</option>
             <option value="November">November-2018</option>
         </select>
@@ -275,11 +342,11 @@
         </div>
     </div>
     <div>
-            <p>
-		<a href="https://www.ghacks.net/2018/11/13/microsoft-windows-security-updates-november-2018-release-overview/" id="kblinks">
-			For KB related details click here.
-		</a>
-	</p>
+        <p>
+            <a href="https://www.ghacks.net/2018/11/13/microsoft-windows-security-updates-november-2018-release-overview/" id="kblinks">
+                For KB related details click here.
+            </a>
+        </p>
     </div>
 
 </body>
